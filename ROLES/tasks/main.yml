@@ -1,0 +1,54 @@
+---
+# tasks file for ROLES
+- name: git module 
+  hosts: localhost
+  vars:
+     repo: "git@github.com:PragatiRajpoot/TRIPTI-TASK.git"
+     dest: "/root/Folder"
+     sshkey: "/root/.ssh/id_rsa"
+     chdir: "/root/roles"
+  tasks:
+    - name: Git up to date
+      ansible.builtin.git:
+        repo: "{{ repo }}"
+        dest: "{{ dest }}"
+        key_file: "{{ sshkey }}"
+        update: yes
+        version: master
+      register: git
+      ignore_errors: true
+    - debug: 
+        var: git 
+    - name: git - add
+      shell: "git add *"
+      args:
+        chdir: "{{ chdir }}"
+      register: gitadd
+      when: git.msg is defined
+    - debug:
+        var: gitadd.cmd
+    - name: git - commiting
+      shell: git commit -m "Initial commit"
+      args:
+        chdir: "{{ chdir }}"
+      register: gitcommit
+      when: git.msg is defined
+    - debug:
+        var: gitcommit.stdout
+    - name: git - push
+      shell: git push
+      args:
+       chdir: "{{ chdir }}"
+      register: gitpush
+      when: git.msg is defined
+    - debug:
+       var: gitpush
+
+
+
+
+
+
+
+
+
